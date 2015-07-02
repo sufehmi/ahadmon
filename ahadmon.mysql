@@ -1,0 +1,498 @@
+-- MySQL dump 10.13  Distrib 5.5.43, for debian-linux-gnu (x86_64)
+--
+-- Host: localhost    Database: ahadmon3
+-- ------------------------------------------------------
+-- Server version	5.5.43-0ubuntu0.14.04.1-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `AuthAssignment`
+--
+
+DROP TABLE IF EXISTS `AuthAssignment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AuthAssignment` (
+  `itemname` varchar(64) NOT NULL,
+  `userid` varchar(64) NOT NULL,
+  `bizrule` text,
+  `data` text,
+  PRIMARY KEY (`itemname`,`userid`),
+  CONSTRAINT `AuthAssignment_ibfk_1` FOREIGN KEY (`itemname`) REFERENCES `AuthItem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AuthAssignment`
+--
+
+LOCK TABLES `AuthAssignment` WRITE;
+/*!40000 ALTER TABLE `AuthAssignment` DISABLE KEYS */;
+INSERT INTO `AuthAssignment` VALUES ('admin','1',NULL,'N;');
+/*!40000 ALTER TABLE `AuthAssignment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `AuthItem`
+--
+
+DROP TABLE IF EXISTS `AuthItem`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AuthItem` (
+  `name` varchar(64) NOT NULL,
+  `type` int(11) NOT NULL,
+  `description` text,
+  `bizrule` text,
+  `data` text,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AuthItem`
+--
+
+LOCK TABLES `AuthItem` WRITE;
+/*!40000 ALTER TABLE `AuthItem` DISABLE KEYS */;
+INSERT INTO `AuthItem` VALUES ('admin',2,'',NULL,'N;'),('authenticated',2,'User Biasa','return !Yii::app()->user->isGuest;','N;'),('updateOwnProfile',1,'update a profile by user himself','return Yii::app()->user->id==Yii::app()->request->getParam(\'id\');','N;'),('user.index',0,'',NULL,'N;'),('user.tambah',0,'',NULL,'N;'),('user.ubah',0,'',NULL,'N;');
+/*!40000 ALTER TABLE `AuthItem` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `AuthItemChild`
+--
+
+DROP TABLE IF EXISTS `AuthItemChild`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `AuthItemChild` (
+  `parent` varchar(64) NOT NULL,
+  `child` varchar(64) NOT NULL,
+  PRIMARY KEY (`parent`,`child`),
+  KEY `child` (`child`),
+  CONSTRAINT `AuthItemChild_ibfk_1` FOREIGN KEY (`parent`) REFERENCES `AuthItem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `AuthItemChild_ibfk_2` FOREIGN KEY (`child`) REFERENCES `AuthItem` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `AuthItemChild`
+--
+
+LOCK TABLES `AuthItemChild` WRITE;
+/*!40000 ALTER TABLE `AuthItemChild` DISABLE KEYS */;
+INSERT INTO `AuthItemChild` VALUES ('authenticated','updateOwnProfile'),('updateOwnProfile','user.ubah');
+/*!40000 ALTER TABLE `AuthItemChild` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `allowed_ip`
+--
+
+DROP TABLE IF EXISTS `allowed_ip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `allowed_ip` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `ip_address` varchar(45) NOT NULL,
+  `nama` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ip_address` (`ip_address`),
+  KEY `fk_allowed_ip_updatedby_idx` (`updated_by`),
+  CONSTRAINT `fk_allowed_ip_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `allowed_ip`
+--
+
+LOCK TABLES `allowed_ip` WRITE;
+/*!40000 ALTER TABLE `allowed_ip` DISABLE KEYS */;
+INSERT INTO `allowed_ip` VALUES (1,'*','Allow All','0000-00-00 00:00:00','2015-03-11 03:08:17',1);
+/*!40000 ALTER TABLE `allowed_ip` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `monitor`
+--
+
+DROP TABLE IF EXISTS `monitor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `monitor` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(128) NOT NULL,
+  `perintah` varchar(1000) NOT NULL,
+  `deskripsi` varchar(1000) DEFAULT NULL,
+  `output_type_id` int(10) unsigned NOT NULL,
+  `view_type_id` int(10) unsigned NOT NULL,
+  `prefix` varchar(45) DEFAULT NULL,
+  `suffix` varchar(45) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nama` (`nama`),
+  KEY `fk_monitor_viewtype_idx` (`view_type_id`),
+  KEY `fk_monitor_usr_idx` (`updated_by`),
+  KEY `fk_monitor_outputtype_idx` (`output_type_id`),
+  CONSTRAINT `fk_monitor_outputtype` FOREIGN KEY (`output_type_id`) REFERENCES `output_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_monitor_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_monitor_viewtype` FOREIGN KEY (`view_type_id`) REFERENCES `view_type` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `monitor`
+--
+
+LOCK TABLES `monitor` WRITE;
+/*!40000 ALTER TABLE `monitor` DISABLE KEYS */;
+INSERT INTO `monitor` VALUES (0,'Uptime','ping',NULL,1,1,NULL,NULL,'0000-00-00 00:00:00','2015-03-12 02:47:33',1);
+/*!40000 ALTER TABLE `monitor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifikasi`
+--
+
+DROP TABLE IF EXISTS `notifikasi`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notifikasi` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `monitor_id` int(10) unsigned NOT NULL,
+  `server_id` int(10) unsigned NOT NULL,
+  `notif_condition1` enum('=','!=','>','<','>=','<=') NOT NULL,
+  `notif_condition2` varchar(500) NOT NULL,
+  `pesan` varchar(1000) DEFAULT 'Monitor: {$monitor}, Server: {$server}, Value: {$value}',
+  `pesan_subject` varchar(45) DEFAULT 'Ahadmon Notifikasi',
+  `interval` int(10) unsigned NOT NULL DEFAULT '0',
+  `aksi_id` int(10) unsigned NOT NULL,
+  `status` tinyint(4) NOT NULL DEFAULT '1' COMMENT '0=pause, 1=aktif',
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_notifikasi_usr_idx` (`updated_by`),
+  KEY `fk_notifikasi_server_idx` (`server_id`),
+  KEY `fk_notifikasi_monitor_idx` (`monitor_id`),
+  KEY `fk_notifikasi_aksi_idx` (`aksi_id`),
+  CONSTRAINT `fk_notifikasi_aksi` FOREIGN KEY (`aksi_id`) REFERENCES `notifikasi_aksi` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notifikasi_monitor` FOREIGN KEY (`monitor_id`) REFERENCES `monitor` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notifikasi_server` FOREIGN KEY (`server_id`) REFERENCES `server` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notifikasi_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifikasi`
+--
+
+LOCK TABLES `notifikasi` WRITE;
+/*!40000 ALTER TABLE `notifikasi` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifikasi` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifikasi_aksi`
+--
+
+DROP TABLE IF EXISTS `notifikasi_aksi`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notifikasi_aksi` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(45) NOT NULL,
+  `tipe` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1=email',
+  `kepada` varchar(500) NOT NULL,
+  `dari` varchar(500) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_notifikasi_aksi_usr_idx` (`updated_by`),
+  CONSTRAINT `fk_notifikasi_aksi_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifikasi_aksi`
+--
+
+LOCK TABLES `notifikasi_aksi` WRITE;
+/*!40000 ALTER TABLE `notifikasi_aksi` DISABLE KEYS */;
+INSERT INTO `notifikasi_aksi` VALUES (1,'Email ke Abu Muhammad',1,'b.hermianto@gmail.com','ahadmon@vpn.ahadmart.com','2015-03-11 09:28:50','2015-03-12 15:21:13',1);
+/*!40000 ALTER TABLE `notifikasi_aksi` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `notifikasi_breach`
+--
+
+DROP TABLE IF EXISTS `notifikasi_breach`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `notifikasi_breach` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `monitor_id` int(10) unsigned NOT NULL,
+  `server_id` int(10) unsigned NOT NULL,
+  `status` tinyint(3) unsigned NOT NULL COMMENT '0=breach, 1=sent',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_notifikasi_breach_server_id_idx` (`server_id`),
+  KEY `fk_notifikasi_breach_monitor_idx` (`monitor_id`),
+  CONSTRAINT `fk_notifikasi_breach_monitor` FOREIGN KEY (`monitor_id`) REFERENCES `monitor` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_notifikasi_breach_server` FOREIGN KEY (`server_id`) REFERENCES `server` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `notifikasi_breach`
+--
+
+LOCK TABLES `notifikasi_breach` WRITE;
+/*!40000 ALTER TABLE `notifikasi_breach` DISABLE KEYS */;
+/*!40000 ALTER TABLE `notifikasi_breach` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `output_type`
+--
+
+DROP TABLE IF EXISTS `output_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `output_type` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(45) NOT NULL,
+  `table_def` varchar(1000) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nama` (`nama`),
+  KEY `fk_output_type_usr_idx` (`updated_by`),
+  CONSTRAINT `fk_output_type_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `output_type`
+--
+
+LOCK TABLES `output_type` WRITE;
+/*!40000 ALTER TABLE `output_type` DISABLE KEYS */;
+INSERT INTO `output_type` VALUES (1,'numeric','INT(11) NULL','0000-00-00 00:00:00','2015-03-11 03:08:09',1),(2,'string','VARCHAR(1000) NULL DEFAULT NULL','0000-00-00 00:00:00','2015-03-11 03:08:09',1),(3,'boolean','TINYINT(1) NOT NULL DEFAULT 0','0000-00-00 00:00:00','2015-03-11 03:08:14',1),(4,'decimal','DECIMAL(18,2) NULL','0000-00-00 00:00:00','2015-03-11 03:08:14',1);
+/*!40000 ALTER TABLE `output_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `server`
+--
+
+DROP TABLE IF EXISTS `server`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `server` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(255) NOT NULL,
+  `address` varchar(255) NOT NULL,
+  `user_name` varchar(45) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nama` (`nama`),
+  KEY `fk_server_usr_idx` (`updated_by`),
+  CONSTRAINT `fk_server_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server`
+--
+
+LOCK TABLES `server` WRITE;
+/*!40000 ALTER TABLE `server` DISABLE KEYS */;
+/*!40000 ALTER TABLE `server` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `server_monitor`
+--
+
+DROP TABLE IF EXISTS `server_monitor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `server_monitor` (
+  `server_id` int(10) unsigned NOT NULL,
+  `monitor_id` int(10) unsigned NOT NULL,
+  `interval` int(11) NOT NULL DEFAULT '1' COMMENT 'menit',
+  `connection_timeout` int(11) NOT NULL DEFAULT '10' COMMENT 'detik',
+  `notif_condition1` enum('=','!=','>','<','>=','<=') DEFAULT NULL COMMENT 'Kondisi untuk where (operator)',
+  `notif_condition2` varchar(255) DEFAULT NULL COMMENT 'Kondisi untuk where (content)',
+  `aktif` tinyint(1) NOT NULL DEFAULT '1' COMMENT '0=tidak aktif; 1=aktif',
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`server_id`,`monitor_id`),
+  KEY `fk_server_monitor_sc_idx` (`monitor_id`),
+  KEY `fk_server_monitor_usr_idx` (`updated_by`),
+  CONSTRAINT `fk_server_monitor_mon` FOREIGN KEY (`monitor_id`) REFERENCES `monitor` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_server_monitor_sr` FOREIGN KEY (`server_id`) REFERENCES `server` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_server_monitor_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `server_monitor`
+--
+
+LOCK TABLES `server_monitor` WRITE;
+/*!40000 ALTER TABLE `server_monitor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `server_monitor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `tbl_migration`
+--
+
+DROP TABLE IF EXISTS `tbl_migration`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_migration` (
+  `version` varchar(255) NOT NULL,
+  `apply_time` int(11) DEFAULT NULL,
+  PRIMARY KEY (`version`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `tbl_migration`
+--
+
+LOCK TABLES `tbl_migration` WRITE;
+/*!40000 ALTER TABLE `tbl_migration` DISABLE KEYS */;
+INSERT INTO `tbl_migration` VALUES ('m000000_000000_base',1426043286),('m140112_075240_init_db',1426043288),('m141009_225621_init_db_ahadmon',1426043294),('m141014_035220_tambah_outputtype_decimal',1426043294),('m141014_084547_tambah_viewtype_onoffstatus',1426043294),('m141014_093505_ganti_outputtype_tabledeff_boolean',1426043294),('m141108_102820_tambah_prefix_suffix_monitor_result',1426043295),('m141116_082443_create_table_waktu_aplikasi',1426043296),('m141210_043916_create_table_allowed_ip',1426043297);
+/*!40000 ALTER TABLE `tbl_migration` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user`
+--
+
+DROP TABLE IF EXISTS `user`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(45) NOT NULL,
+  `nama_lengkap` varchar(100) DEFAULT NULL,
+  `password` varchar(512) NOT NULL,
+  `salt` varchar(512) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(11) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nama` (`nama`),
+  KEY `fk_user_updatedby` (`updated_by`),
+  CONSTRAINT `fk_user_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user`
+--
+
+LOCK TABLES `user` WRITE;
+/*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'admin','Administrator','JDJ5JDEwJGVSU29DMUlkWERMQTl3VVhPRTg0d2VISjB6WWJvclBuNkhHQlptY3Jza0FUUGl4TVVBUTlH','eRSoC1IdXDLA9wUXOE84wjTPy3VVFg==','0000-00-00 00:00:00','0000-00-00 00:00:00',1);
+/*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `view_type`
+--
+
+DROP TABLE IF EXISTS `view_type`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `view_type` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `nama` varchar(45) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `nama` (`nama`),
+  KEY `fk_view_type_usr_idx` (`updated_by`),
+  CONSTRAINT `fk_view_type_usr` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `view_type`
+--
+
+LOCK TABLES `view_type` WRITE;
+/*!40000 ALTER TABLE `view_type` DISABLE KEYS */;
+INSERT INTO `view_type` VALUES (1,'linechart','0000-00-00 00:00:00','2015-03-11 03:08:10',1),(2,'piechart','0000-00-00 00:00:00','2015-03-11 03:08:10',1),(3,'barchart','0000-00-00 00:00:00','2015-03-11 03:08:10',1),(4,'onoffstatus','0000-00-00 00:00:00','2015-03-11 03:08:14',1);
+/*!40000 ALTER TABLE `view_type` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `waktu_aplikasi`
+--
+
+DROP TABLE IF EXISTS `waktu_aplikasi`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `waktu_aplikasi` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `dari` time NOT NULL,
+  `sampai` time NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_by` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_waktu_applikasi_updatedby_idx` (`updated_by`),
+  CONSTRAINT `fk_waktu_applikasi_updatedby` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `waktu_aplikasi`
+--
+
+LOCK TABLES `waktu_aplikasi` WRITE;
+/*!40000 ALTER TABLE `waktu_aplikasi` DISABLE KEYS */;
+INSERT INTO `waktu_aplikasi` VALUES (1,'00:00:00','23:00:00','2015-03-11 03:17:40','2015-03-11 03:17:40',1);
+/*!40000 ALTER TABLE `waktu_aplikasi` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2015-07-02 14:37:22
