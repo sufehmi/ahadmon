@@ -211,7 +211,7 @@ class Monitor extends BaseMonitor {
 				}
 			} else {
 				try {
-					$berhasil = $this->db->exec("INSERT INTO {$this->monitor['namaTabel']} (result) values ({$out[0]})");
+					$berhasil = $this->db->exec("INSERT INTO {$this->monitor['namaTabel']} (result) values ('{$out[0]}')");
 
 					if ($this->isBreach($this->monitor['server_id'], $this->monitor['monitor_id'], $out[0])) {
 						$this->notifikasi($this->monitor['server_id'], $this->monitor['monitor_id'], $out[0]);
