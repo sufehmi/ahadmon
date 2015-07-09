@@ -24,7 +24,7 @@
                                     <td><?php echo $server->server->nama; ?></td>
                                     <!--<td><?php //echo $server->server->address; ?></td>-->
                                     <td>
-                                        <span class="tristate"><?php echo(ServerMonitor::model()->ambilDataTerakhir($server->server_id, $monitorId, 20)); ?></span>
+                                        <span class="barchart"><?php echo(ServerMonitor::model()->ambilDataTerakhir($server->server_id, $monitorId, 20)); ?></span>
                                         <span class="right">
                                             <?php
                                             //echo $tipeOutput;

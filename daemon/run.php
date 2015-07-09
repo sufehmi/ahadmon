@@ -2,8 +2,8 @@
 
 $host = 'localhost';
 $dbName = 'ahadmon';
-define('MYSQL_USER', 'myuser');
-define('MYSQL_PASS', 'mypassword');
+define('MYSQL_USER', 'root');
+define('MYSQL_PASS', '');
 
 $dsn = "mysql:host={$host};dbname={$dbName};charset=utf8";
 
@@ -211,7 +211,7 @@ class Monitor extends BaseMonitor {
 				}
 			} else {
 				try {
-					$berhasil = $this->db->exec("INSERT INTO {$this->monitor['namaTabel']} (result) values ({$out[0]})");
+					$berhasil = $this->db->exec("INSERT INTO {$this->monitor['namaTabel']} (result) values ('{$out[0]}')");
 
 					if ($this->isBreach($this->monitor['server_id'], $this->monitor['monitor_id'], $out[0])) {
 						$this->notifikasi($this->monitor['server_id'], $this->monitor['monitor_id'], $out[0]);
