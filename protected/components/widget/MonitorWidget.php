@@ -18,6 +18,9 @@ class MonitorWidget extends CWidget {
             case 'onoffstatus':
                 $view = 'boxMonitorOnOffStatus';
                 break;
+            case 'text':
+                $view = 'boxMonitorText';
+                break;
         endswitch;
 
         $this->render($view, array(

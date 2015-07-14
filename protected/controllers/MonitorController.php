@@ -63,7 +63,7 @@ class MonitorController extends Controller {
 
       $serverList = new ServerMonitor('search');
       $serverList->unsetAttributes();
-      $serverList->monitor_id = $id;
+      $serverList->monitor_id = "={$id}";
 
       $this->render('ubah', array(
           'model' => $model,
