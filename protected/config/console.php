@@ -25,8 +25,8 @@ return array(
         'db' => array(
             'connectionString' => 'mysql:host=localhost;dbname=ahadmon',
             'emulatePrepare' => true,
-            'username' => 'myuser',
-            'password' => 'mypassword',
+            'username' => 'root',
+            'password' => '',
             'charset' => 'utf8',
         ),
         'log' => array(
