@@ -7,9 +7,11 @@ $this->breadcrumbs = array(
 
 
 Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery.sparkline.js');
+Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/vendor/jquery-ui-sortable.min.js');
 ?>
 
-<div class="row">
+<!--<div class="row">-->
+<div class="masonry" id="item-masonry">
    <?php
    $this->renderPartial('_uptime_status', array(
        'servers' => $servers,
@@ -18,14 +20,14 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
    ?>
    <?php
    foreach ($monitorAktif as $monitor) {
-
       $this->widget('MonitorWidget', array(
-          'title' => $monitor->monitor->nama,
-          'monitorId' => $monitor->monitor_id
+          'title' => $monitor['nama'],
+          'monitorId' => $monitor['id']
       ));
    }
    ?>
 </div>
+<!--</div>-->
 <script>
    $('.linechart').sparkline('html', {
       type: 'line',
@@ -63,15 +65,30 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
       console.log('reload');
       location.reload();
    }
+   $(".item-m").sortable({
+      connectWith: ".item-m",
+      handle: ".block-header",
+      stop: function (event, ui) {
+         var data = "";
+         $(".item-m").each(function () {
+            data += ($(this).sortable("serialize"));
+            data += '&';
+         });
+         kirimDataSort(data);
+      }
+   });
+
+   function kirimDataSort(data) {
+      $.ajax({
+         data: data,
+         url: '<?php echo $this->createUrl('sort '); ?>',
+         type: "POST",
+         success: function (data) {
+            if (data.sukses) {
+            } else {
+            }
+         }
+      });
+   }
+
 </script>
-<?php
-/*
-<div style="background-color: #0b62a4; width:50px; height:50px;float:left;">Biru</div>
-<div style="background-color: #7A92A3; width:50px; height:50px;float:left;">Biru Muda</div>
-<div style="background-color: #4da74d; width:50px; height:50px;float:left;">Hijau</div>
-<div style="background-color: #afd8f8; width:50px; height:50px;float:left;">Toska</div>
-<div style="background-color: #edc240; width:50px; height:50px;float:left;">Orange</div>
-<div style="background-color: #cb4b4b; width:50px; height:50px;float:left;">Merah</div>
-<div style="background-color: #9440ed; width:50px; height:50px;float:left;">Violet</div>
- *
- */
