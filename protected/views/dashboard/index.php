@@ -20,10 +20,9 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
    ?>
    <?php
    foreach ($monitorAktif as $monitor) {
-
       $this->widget('MonitorWidget', array(
-          'title' => $monitor->monitor->nama,
-          'monitorId' => $monitor->monitor_id
+          'title' => $monitor['nama'],
+          'monitorId' => $monitor['id']
       ));
    }
    ?>
@@ -71,13 +70,25 @@ Yii::app()->clientScript->registerScriptFile(Yii::app()->theme->baseUrl.'/js/ven
       handle: ".block-header",
       stop: function (event, ui) {
          var data = "";
-
          $(".item-m").each(function () {
             data += ($(this).sortable("serialize"));
             data += '&';
          });
-         console.log(data);
+         kirimDataSort(data);
       }
    });
+
+   function kirimDataSort(data) {
+      $.ajax({
+         data: data,
+         url: '<?php echo $this->createUrl('sort '); ?>',
+         type: "POST",
+         success: function (data) {
+            if (data.sukses) {
+            } else {
+            }
+         }
+      });
+   }
 
 </script>

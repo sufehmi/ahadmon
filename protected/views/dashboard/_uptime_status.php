@@ -1,6 +1,6 @@
 <!--<div class="large-4 columns left">-->
 <div class="item-m">
-   <div class="block" id="mon_uptime">
+   <div class="block" id="mon_0">
       <div class="top-bar block-header">
          <ul class="title-area">
             <li class="name"><h1><i class="fa fa-area-chart"></i> Uptime</h1></li>
